@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-rose: #ff4d6d;
+            --dark-rose: #c9184a;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #050505;
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- BACKGROUND GRADIENT --- */
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120vw;
+            height: 120vh;
+            background: radial-gradient(circle, rgba(255, 77, 109, 0.15) 0%, rgba(0, 0, 0, 0) 60%);
+            z-index: -1;
+        }
+
+        /* --- SCREEN MANAGEMENT --- */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        /* --- GLASS CARD STYLE --- */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* --- LOCK SCREEN --- */
+        .lock-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
+        .pass-input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .pass-input:focus { border-color: var(--primary-rose); }
+        .pass-input::placeholder { color: rgba(255,255,255,0.5); }
+
+        /* --- BUTTONS --- */
+        .luxury-btn {
+            background: linear-gradient(135deg, var(--primary-rose), var(--dark-rose));
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
+        }
+        .luxury-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5);
+        }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+
+        /* --- PAGE 2 CENTERPIECE --- */
+        #petalCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+
+        .rose-container {
+            z-index: 2;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* The Big Emoji Rose */
+        .big-emoji-rose {
+            font-size: 8rem; /* Very Big */
+            display: block;
+            filter: drop-shadow(0 0 30px rgba(255, 77, 109, 0.4));
+            animation: heartbeat 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .rose-container:hover .big-emoji-rose {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 50px rgba(255, 77, 109, 0.8));
+        }
+
+        .tap-hint {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- MESSAGE OVERLAY --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+
+        .message-box { width: 85%; max-width: 500px; text-align: center; position: relative;}
+
+        .typed-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: #ffb5c2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .signature {
+            margin-top: 30px;
+            font-weight: 600;
+            color: var(--primary-rose);
+            display: block;
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 1s ease 2s;
+        }
+        .signature.show { opacity: 1; transform: translateY(0); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.1); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            60% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .shake { animation: shake 0.3s ease-in-out; border-color: #ff3333 !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    
+    <audio id="bgMusic" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="lockScreen" class="screen">
+        <div class="glass-card">
+            <span class="lock-icon">🔒</span>
+            <h2 style="margin-bottom:10px;">For My Love</h2>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">Enter the magic word</p>
+            <input type="password" id="passwordInput" class="pass-input" placeholder="Password...">
+            <button class="luxury-btn" onclick="checkPassword()">Unlock</button>
+        </div>
+    </div>
+
+    <div id="page1" class="screen hidden">
+        <div class="glass-card">
+            <h1 class="question" style="font-size: 1.6rem; margin-bottom: 30px;">Aj kya hai apko pata hai ?? 🤔</h1>
+            <div class="btn-group">
+                <button class="luxury-btn" onclick="nextPage()">Han</button>
+                <button class="luxury-btn" onclick="nextPage()">Hanji</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page2" class="screen hidden">
+        <canvas id="petalCanvas"></canvas>
+        <div class="rose-container" onclick="revealMessage()">
+            <div class="big-emoji-rose">🌹</div>
+            <p class="tap-hint">Tap to open</p>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay">
+        <div class="message-box">
+            <p id="messageText" class="typed-text"></p>
+            <span id="signature" class="signature">Love you so much <br>(Shovik)</span>
+        </div>
+    </div>
+
+    <script>
+        // --- PASSWORD SYSTEM ---
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const pass = input.value.trim();
+            if (pass === "iloveyou4ever") {
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('page1').classList.remove('hidden');
+            } else {
+                input.classList.add('shake');
+                setTimeout(() => { input.classList.remove('shake'); input.value = ""; }, 400);
+            }
+        }
+        // Allow "Enter" key
+        document.getElementById('passwordInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // --- PETAL ANIMATION (Canvas) ---
+        const canvas = document.getElementById('petalCanvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Petal {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 15 + 10; // Slightly larger petals
+                this.speed = Math.random() * 2 + 0.5;
+                this.angle = Math.random() * 360;
+                this.spin = Math.random() * 2 - 1;
+                // Random petal colors (Pink/Red variations)
+                this.color = `hsl(${Math.random() * 20 + 340}, 100%, ${Math.random() * 20 + 50}%)`;
+            }
+            update() {
+                this.y += this.speed;
+                this.angle += this.spin;
+                if (this.y > canvas.height) {
+                    this.y = -20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                // Draw a simple petal shape
+                ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initPetals() {
+            for (let i = 0; i < 60; i++) petals.push(new Petal());
+        }
+        function animatePetals() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animatePetals);
+        }
+
+        // --- NAVIGATION ---
+        function nextPage() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('page2').classList.remove('hidden');
+            initPetals();
+            animatePetals();
+        }
+
+        // --- MUSIC & TYPEWRITER ---
+        const message = "Pehli baar valentine's week manane wala feeling experience kar rha hu 🫠 to eh chota sa rose 🌹 apke liye laya hu, sambhal ke rakhna darlingggg ! 😘";
+        
+        function revealMessage() {
+            // 1. Play Music
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.5; // Start at 50% volume so it's not too loud
+            audio.play().catch(error => console.log("Audio play failed (browser restriction):", error));
+
+            // 2. Show Overlay
+            document.getElementById('overlay').classList.add('active');
+
+            // 3. Typewriter Effect
+            let i = 0;
+            const speed = 70; // typing speed
+            const target = document.getElementById('messageText');
+            
+            function type() {
+                if (i < message.length) {
+                    target.innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    document.getElementById('signature').classList.add('show');
+                }
+            }
+            target.innerHTML = "";
+            setTimeout(type, 500);
+        }
+    </script>
+</body>
+</html>
